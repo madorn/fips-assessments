@@ -97,6 +97,7 @@
         namespace: test-gitops
         api_version: argoproj.io/v1alpha1
         kind: ArgoCD
+        wait: true
       register: argocd
       until: argocd.resources[0].status.phase is defined and argocd.resources[0].status.phase == "Available"
       retries: 10
