@@ -1,12 +1,15 @@
 ---
 - name: print var
   debug: 
-    msg: varfull={{ channel.currentCSVDesc }}
+    msg: varfull={{ channel.currentCSV }}
+- name: print var
+  debug: 
+    msg: varfull={{ install_namespace }}
 - name: Edit the CSV to disable FIPS_MODE
   kubernetes.core.k8s:
     state: patched
-    namespace: "{{ csv.metadata.namespace }}"
-    name: "{{ csv.metadata.name }}"
+    namespace: "{{ install_namespace }}"
+    name: "{{ channel.currentCSV }}"
     definition:
       apiVersion: operators.coreos.com/v1alpha1
       kind: ClusterServiceVersion
