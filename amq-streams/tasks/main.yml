@@ -1,10 +1,10 @@
 ---
 - name: print var
   debug: 
-    msg: varfull={{ channel.currentCSV }}
+    msg: currentCSV={{ channel.currentCSV }}
 - name: print var
   debug: 
-    msg: varfull={{ install_namespace }}
+    msg: name={{ channel.name }}
 - name: Edit the CSV to disable FIPS_MODE
   kubernetes.core.k8s:
     state: patched
