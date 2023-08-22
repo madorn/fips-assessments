@@ -31,6 +31,12 @@
     - name: Report result
       ansible.builtin.set_fact:
         assessment_result: "{{ 'pass' if (result.resources[0].status.ready is defined) else 'fail' }}"
+- name: print var
+  debug: 
+    msg: first={{ result.resources[0].status }}
+- name: print var
+  debug: 
+    msg: second={{ result.resources[0].status.ready }}
 - name: Install and report part 2
   block:
     - name: Wait for install part 2
@@ -40,7 +46,7 @@
         name: example-keycloak
         namespace: "{{ target_namespace }}"
       register: result
-      until: result.resources[0].status.ready == "true"
+      until: result.resources[0].status.ready == "True"
       retries: 30
       delay: 10
   always:
