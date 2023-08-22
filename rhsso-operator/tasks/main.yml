@@ -14,7 +14,7 @@
         instances: 1
         externalAccess:
           enabled: true
-- name: First Install and report
+- name: Install and report
   block:
     - name: Wait for install
       kubernetes.core.k8s_info:
@@ -23,40 +23,14 @@
         name: example-keycloak
         namespace: "{{ target_namespace }}"
       register: result
-      until: result.resources[0].status.ready is defined
+      until: result.resources[0].status.ready is defined and result.resources[0].status.ready == True
       retries: 30
       delay: 10
       failed_when: result.resources[0] is not defined
   always:
     - name: Report result
       ansible.builtin.set_fact:
-        assessment_result: "{{ 'pass' if (result.resources[0].status.ready is defined) else 'fail' }}"
-- name: Sleep for 120 seconds and continue with play
-  ansible.builtin.wait_for:
-    timeout: 120
-  delegate_to: localhost
-- name: Second Install and report
-  block:
-    - name: Wait for install
-      kubernetes.core.k8s_info:
-        api_version: keycloak.org/v1alpha1
-        kind: Keycloak
-        name: example-keycloak
-        namespace: "{{ target_namespace }}"
-      register: foo
-      until: foo.resources[0].status.ready == True
-      retries: 10
-      delay: 10
-  always:
-    - name: Report result
-      ansible.builtin.set_fact:
-        assessment_result: "{{ 'pass' if (foo.resources[0].status.ready == True) else 'fail' }}"
-- name: print var
-  debug: 
-    msg: varfull={{ foo.resources[0].status.ready }}
-- name: print var
-  debug: 
-    msg: varfull={{ foo.resources[0].status }}
+        assessment_result: "{{ 'pass' if (result.resources[0].status.ready is defined and result.resources[0].status.ready == True) else 'fail' }}"
 - name: Clean up operand
   kubernetes.core.k8s:
     state: absent
