@@ -44,10 +44,13 @@
         name: example-keycloak
         namespace: "{{ target_namespace }}"
       register: foo
+      until: foo.resources[0].status.ready == "True"
+      retries: 10
+      delay: 10
   always:
     - name: Report result
       ansible.builtin.set_fact:
-        assessment_result: "{{ 'pass' if (result.resources[0].status.ready == 'true') else 'fail' }}"
+        assessment_result: "{{ 'pass' if (foo.resources[0].status.ready == 'True') else 'fail' }}"
 - name: print var
   debug: 
     msg: varfull={{ foo.resources[0].status.ready }}
