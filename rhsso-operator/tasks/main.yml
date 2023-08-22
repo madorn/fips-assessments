@@ -31,6 +31,13 @@
     - name: Report result
       ansible.builtin.set_fact:
         assessment_result: "{{ 'pass' if (result.resources[0].status.ready is defined) else 'fail' }}"
+- name: Sleep for 240 seconds and continue with play
+  ansible.builtin.wait_for:
+    timeout: 240
+  delegate_to: localhost
+- name: print var
+  debug: 
+    msg: varfull={{ result.resources[0].status.ready }}
 - name: Second Install and report
   block:
     - name: Wait for install
