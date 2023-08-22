@@ -45,7 +45,7 @@
         kind: Keycloak
         name: example-keycloak
         namespace: "{{ target_namespace }}"
-      wait: true
+        wait: true
       until: result.resources[0].status.ready == "True"
       retries: 30
       delay: 10
