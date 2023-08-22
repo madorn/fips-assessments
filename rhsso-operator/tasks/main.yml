@@ -44,9 +44,6 @@
         name: example-keycloak
         namespace: "{{ target_namespace }}"
       register: foo
-      until: foo.resources[0].status.ready == "true"
-      retries: 10
-      delay: 5
   always:
     - name: Report result
       ansible.builtin.set_fact:
