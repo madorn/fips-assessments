@@ -23,7 +23,7 @@
   register: result
   until: result.resources[0].status.ready is defined
   retries: 10
-  delay: 5
+  delay: 10
   failed_when: result.resources[0] is not defined
 - name: Wait for ready
   kubernetes.core.k8s_info:
