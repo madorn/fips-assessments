@@ -30,7 +30,7 @@
   always:
     - name: Report result
       ansible.builtin.set_fact:
-        assessment_result: "{{ 'pass' if (result.resources[0] is defined and result.resources[0].status.ready == 'true') else 'fail' }}"
+        assessment_result: "{{ 'pass' if (result.resources[0] is defined and result.resources.status.ready == 'true') else 'fail' }}"
 - name: Clean up operand
   kubernetes.core.k8s:
     state: absent
