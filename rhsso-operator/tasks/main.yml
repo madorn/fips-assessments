@@ -44,9 +44,9 @@
         name: example-keycloak
         namespace: "{{ target_namespace }}"
       register: foo
-      until: foo.resources[0].status.ready == "True"
-      retries: 10
-      delay: 10
+#      until: foo.resources[0].status.ready == "True"
+#      retries: 10
+#      delay: 10
   always:
     - name: Report result
       ansible.builtin.set_fact:
@@ -54,6 +54,9 @@
 - name: print var
   debug: 
     msg: varfull={{ foo.resources[0].status.ready }}
+- name: print var
+  debug: 
+    msg: varfull={{ foo.resources[0].status }}
 - name: Clean up operand
   kubernetes.core.k8s:
     state: absent
