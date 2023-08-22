@@ -14,48 +14,28 @@
         instances: 1
         externalAccess:
           enabled: true
-- name: Install and report part 1
-  block:
-    - name: Wait for install
-      kubernetes.core.k8s_info:
-        api_version: keycloak.org/v1alpha1
-        kind: Keycloak
-        name: example-keycloak
-        namespace: "{{ target_namespace }}"
-      register: result
-      until: result.resources[0].status.ready is defined
-      retries: 30
-      delay: 10
-      failed_when: result.resources[0] is not defined
-  always:
-    - name: Report result
-      ansible.builtin.set_fact:
-        assessment_result: "{{ 'pass' if (result.resources[0].status.ready is defined) else 'fail' }}"
-- name: print var
-  debug: 
-    msg: first={{ result.resources[0].status }}
-- name: print var
-  debug: 
-    msg: second={{ result.resources[0].status.ready }}
-- name: Install and report part 2
-  block:
-    - name: Wait for install part 2
-      kubernetes.core.k8s_info:
-        api_version: keycloak.org/v1alpha1
-        kind: Keycloak
-        name: example-keycloak
-        namespace: "{{ target_namespace }}"
-      register: again
-      until: again.resources[0].status.ready == "True"
-      retries: 10
-      delay: 10
-  always:
-    - name: Report result
-      ansible.builtin.set_fact:
-        assessment_result: "{{ 'pass' if (result.resources[0].status.ready == 'true') else 'fail' }}"
-- name: print var
-  debug: 
-    msg: second={{ result.resources[0].status.ready }}
+- name: Wait for define
+  kubernetes.core.k8s_info:
+    api_version: keycloak.org/v1alpha1
+    kind: Keycloak
+    name: example-keycloak
+    namespace: "{{ target_namespace }}"
+  register: result
+  until: result.resources[0].status.ready is defined and result.resources[0].status.ready == "true"
+  retries: 10
+  delay: 5
+  failed_when: result.resources[0] is not defined
+- name: Wait for ready
+  kubernetes.core.k8s_info:
+    api_version: keycloak.org/v1alpha1
+    kind: Keycloak
+    name: example-keycloak
+    namespace: "{{ target_namespace }}"
+  register: result
+  until: result.resources[0].status.ready == "true"
+  retries: 10
+  delay: 5
+  failed_when: result.resources[0] is not defined
 - name: Clean up operand
   kubernetes.core.k8s:
     state: absent
