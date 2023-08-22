@@ -45,8 +45,8 @@
         kind: Keycloak
         name: example-keycloak
         namespace: "{{ target_namespace }}"
-      register: result
-      until: result.resources[0].status.ready == "True"
+      register: another
+      until: another.resources[0].status.ready == "True"
       retries: 30
       delay: 10
   always:
