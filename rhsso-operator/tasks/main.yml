@@ -31,13 +31,10 @@
     - name: Report result
       ansible.builtin.set_fact:
         assessment_result: "{{ 'pass' if (result.resources[0].status.ready is defined) else 'fail' }}"
-- name: Sleep for 240 seconds and continue with play
+- name: Sleep for 120 seconds and continue with play
   ansible.builtin.wait_for:
-    timeout: 240
+    timeout: 120
   delegate_to: localhost
-- name: print var
-  debug: 
-    msg: varfull={{ result.resources[0].status.ready }}
 - name: Second Install and report
   block:
     - name: Wait for install
@@ -46,14 +43,17 @@
         kind: Keycloak
         name: example-keycloak
         namespace: "{{ target_namespace }}"
-      register: result
-      until: result.resources[0].status.ready == "true"
-      retries: 30
-      delay: 10
+      register: foo
+      until: foo.resources[0].status.ready == "true"
+      retries: 10
+      delay: 5
   always:
     - name: Report result
       ansible.builtin.set_fact:
         assessment_result: "{{ 'pass' if (result.resources[0].status.ready == 'true') else 'fail' }}"
+- name: print var
+  debug: 
+    msg: varfull={{ foo.resources[0].status.ready }}
 - name: Clean up operand
   kubernetes.core.k8s:
     state: absent
