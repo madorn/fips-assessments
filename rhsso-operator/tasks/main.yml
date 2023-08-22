@@ -21,7 +21,7 @@
     name: example-keycloak
     namespace: "{{ target_namespace }}"
   register: result
-  until: result.resources[0].status.ready is defined and result.resources[0].status.ready == "true"
+  until: result.resources[0].status.ready is defined
   retries: 10
   delay: 5
   failed_when: result.resources[0] is not defined
@@ -34,7 +34,7 @@
   register: result
   until: result.resources[0].status.ready == "true"
   retries: 10
-  delay: 5
+  delay: 10
   failed_when: result.resources[0] is not defined
 - name: Clean up operand
   kubernetes.core.k8s:
