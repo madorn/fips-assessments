@@ -23,14 +23,14 @@
         name: example-keycloak
         namespace: "{{ target_namespace }}"
       register: result
-      until: result.resources[0].status.ready is defined and result.resources[0].status.ready == "True"
+      until: result.resources[0].status.ready == "True"
       retries: 30
       delay: 10
       failed_when: result.resources[0] is not defined
   always:
     - name: Report result
       ansible.builtin.set_fact:
-        assessment_result: "{{ 'pass' if (result.resources[0].status.ready is defined and result.resources[0].status.ready == 'True') else 'fail' }}"
+        assessment_result: "{{ 'pass' if (result.resources[0].status.ready == 'True') else 'fail' }}"
 - name: Clean up operand
   kubernetes.core.k8s:
     state: absent
