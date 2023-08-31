@@ -92,9 +92,6 @@
             adminPortalCredentialsRef:
               name: 3scaleportal
       register: result
-      wait: true
-      wait_condition:
-        ready: "True"
       retries: 5
       delay: 5
       failed_when: result.resources[0] is not defined
