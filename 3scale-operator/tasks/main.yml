@@ -2,8 +2,8 @@
 - name: Setting Up Results Var
   ansible.builtin.set_fact:
     test_results: []
-#- name: Create Secret in target_namespace
-#  block:
+- name: Create Secret in target_namespace
+  block:
 #    - name: Create Secret in target_namespace
 #      kubernetes.core.k8s:
 #        state: present
