@@ -29,7 +29,7 @@
           metadata:
             name: apimanager-sample
           spec:
-            wildcardDomain: 3scale.${CLUSTER_BASE_URL}
+            wildcardDomain: 3scale.apps.ocp413mdrosa.7gx5.p1.openshiftapps.com
             system:
               fileStorage:
                 simpleStorageService:
