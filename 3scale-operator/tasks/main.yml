@@ -35,11 +35,11 @@
                 simpleStorageService:
                   configurationSecretRef:
                     name: aws-auth
+        wait: true
+        wait_condition:
+          status: "True"
+          type: "Available"
       register: result
-      wait: true
-      wait_condition:
-        status: "True"
-        type: "Available"
       retries: 5
       delay: 5
       failed_when: result.resources[0] is not defined
