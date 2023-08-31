@@ -41,7 +41,7 @@
           type: "Available"
       register: result
       retries: 30
-      delay: 5
+      delay: 10
       failed_when: result.resources[0] is not defined
   rescue:
     - name: Print when failed
@@ -67,8 +67,8 @@
             adminPortalCredentialsRef:
               name: 3scaleportal
       register: result
-      retries: 5
-      delay: 5
+      retries: 30
+      delay: 10
       failed_when: result.resources[0] is not defined
   rescue:
     - name: Print when failed
@@ -92,8 +92,8 @@
             adminPortalCredentialsRef:
               name: 3scaleportal
       register: result
-      retries: 5
-      delay: 5
+      retries: 30
+      delay: 10
       failed_when: result.resources[0] is not defined
   rescue:
     - name: Print when failed
