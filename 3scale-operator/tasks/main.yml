@@ -40,7 +40,7 @@
           status: "True"
           type: "Available"
       register: result
-      retries: 5
+      retries: 30
       delay: 5
       failed_when: result.resources[0] is not defined
   rescue:
