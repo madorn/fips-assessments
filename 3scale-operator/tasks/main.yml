@@ -60,7 +60,7 @@
           metadata:
             name: 3scaleportal
           stringData:
-            AdminPortalURL: "https://access-token@3scale-admin.3scale.{{ cluster_base_url }}
+            AdminPortalURL: "https://access-token@3scale-admin.3scale.{{ cluster_base_url }}"
           type: Opaque
   rescue:
     - name: Print when failed
