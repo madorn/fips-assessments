@@ -2,18 +2,11 @@
 - name: Setting Up Results Var
   ansible.builtin.set_fact:
     test_results: []
-- name: print var
-  debug: 
-    msg: aws_access_key_id={{ aws_access_key_id }}
-- name: print var
-  debug: 
-    msg: aws_secret_access_key={{ aws_secret_access_key }}
 - name: Create Secret in target_namespace
   block:
     - name: Create s3 bucket for 3Scale API Management
       amazon.aws.s3_bucket:
-        name: mdbuckettest11
-#        name: 3scale-bucket
+        name: opcap-ansible-3scale-bucket
         aws_access_key_id: "{{ aws_access_key_id }}"
         aws_secret_access_key: "{{ aws_secret_access_key }}"
         region: "{{ aws_region }}"
@@ -30,7 +23,7 @@
           stringData:
             AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
             AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
-            AWS_BUCKET: 3scale-bucket
+            AWS_BUCKET: opcap-ansible-3scale-bucket
             AWS_REGION: "{{ aws_region }}"
           type: Opaque
     - name: Create APIManager in target_namespace
