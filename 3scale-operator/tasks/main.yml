@@ -13,10 +13,10 @@
     - name: Create s3 bucket for 3Scale API Management
       amazon.aws.s3_bucket:
         name: 3scale-bucket
-#        aws_access_key_id: "{{ aws_access_key_id }}"
-#        aws_secret_access_key: "{{ aws_secret_access_key }}"
-#        region: "{{ aws_region }}"
-#        state: present
+#       aws_access_key_id: "{{ aws_access_key_id }}"
+#       aws_secret_access_key: "{{ aws_secret_access_key }}"
+        region: "{{ aws_region }}"
+        state: absent
     - name: Create Secret in target_namespace
       kubernetes.core.k8s:
         state: present
