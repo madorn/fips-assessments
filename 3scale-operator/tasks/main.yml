@@ -4,21 +4,28 @@
     test_results: []
 - name: Create Secret in target_namespace
   block:
-#    - name: Create Secret in target_namespace
-#      kubernetes.core.k8s:
-#        state: present
-#        namespace: "{{ target_namespace }}"
-#        definition:
-#          apiVersion: v1
-#          kind: Secret
-#          metadata:
-#            name: aws-auth
-#          stringData:
-#            AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-#            AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-#            AWS_BUCKET: ${AWS_BUCKET}
-#            AWS_REGION: ${AWS_REGION}
-#          type: Opaque
+    - name: Create s3 bucket for 3Scale API Management
+      amazon.aws.s3_bucket:
+        name: 3scale-bucket
+        access_key: ${AWS_ACCESS_KEY_ID}
+        secret_key: ${AWS_SECRET_ACCESS_KEY}
+        region: ${AWS_REGION}
+        state: present
+    - name: Create Secret in target_namespace
+      kubernetes.core.k8s:
+        state: present
+        namespace: "{{ target_namespace }}"
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: aws-auth
+          stringData:
+            AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+            AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+            AWS_BUCKET: 3scale-bucket
+            AWS_REGION: ${AWS_REGION}
+          type: Opaque
     - name: Create APIManager in target_namespace
       kubernetes.core.k8s:
         state: present
@@ -29,7 +36,7 @@
           metadata:
             name: apimanager-sample
           spec:
-            wildcardDomain: 3scale.apps.ocp413mdrosa.7gx5.p1.openshiftapps.com
+            wildcardDomain: 3scale.${CLUSTER_BASE_URL}
             system:
               fileStorage:
                 simpleStorageService:
@@ -39,10 +46,22 @@
         wait_condition:
           status: "True"
           type: "Available"
+        # Usually the APIManager takes 2-3min to get the True status.
+        wait_timeout: 240
       register: result
-      retries: 30
-      delay: 10
       failed_when: result.resources[0] is not defined
+    - name: Create Secret in target_namespace for APICast
+      kubernetes.core.k8s:
+        state: present
+        namespace: "{{ target_namespace }}"
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: 3scaleportal
+          stringData:
+            AdminPortalURL: https://access-token@3scale-admin.3scale.${CLUSTER_BASE_URL}
+          type: Opaque
   rescue:
     - name: Print when failed
       ansible.builtin.debug:
@@ -50,9 +69,10 @@
     - name: Adding result to list
       ansible.builtin.set_fact:
         test_results: "{{ test_results + [false] }}"
+
 - name: Create APICast
   block:
-    - name: Create APICast for Staging in target_namespace
+    - name: Create APICast in target_namespace
       kubernetes.core.k8s:
         state: present
         namespace: "{{ target_namespace }}"
@@ -60,16 +80,17 @@
           apiVersion: apps.3scale.net/v1alpha1
           kind: APIcast
           metadata:
-            name: example-apicast-staging
+            name: apicast-staging
           spec:
             deploymentEnvironment: staging
             configurationLoadMode: lazy
             adminPortalCredentialsRef:
               name: 3scaleportal
-      register: result
-      retries: 30
-      delay: 10
       failed_when: result.resources[0] is not defined
+    - name: Check connectivity with the APICast service
+      ansible.builtin.uri:
+        url: http://apicast-apicast-staging:8080
+      register: result
   rescue:
     - name: Print when failed
       ansible.builtin.debug:
@@ -77,31 +98,7 @@
     - name: Adding result to list
       ansible.builtin.set_fact:
         test_results: "{{ test_results + [false] }}"
-- name: Install and report - APICast for production
-  block:
-    - name: Create APICast for Production in target_namespace
-      kubernetes.core.k8s:
-        state: present
-        namespace: "{{ target_namespace }}"
-        definition:
-          apiVersion: apps.3scale.net/v1alpha1
-          kind: APIcast
-          metadata:
-            name: example-apicast-production
-          spec:
-            adminPortalCredentialsRef:
-              name: 3scaleportal
-      register: result
-      retries: 30
-      delay: 10
-      failed_when: result.resources[0] is not defined
-  rescue:
-    - name: Print when failed
-      ansible.builtin.debug:
-        msg: "3Scale API Cast for Production failed. Err: {{ ansible_failed_result }}"
-    - name: Adding result to list
-      ansible.builtin.set_fact:
-        test_results: "{{ test_results + [false] }}"
+
 - name: Create result
   ansible.builtin.set_fact:
     assessment_result: "{{ 'pass' if (test_results is all) else 'fail' }}"
@@ -116,26 +113,6 @@
     wait: true
     wait_timeout: 60
     wait_sleep: 5
-- name: Clean up operand APICast - Staging
-  kubernetes.core.k8s:
-    state: absent
-    api_version: apps.3scale.net/v1alpha1
-    kind: APIcast
-    name: example-apicast-staging
-    namespace: "{{ target_namespace }}"
-    wait: true
-    wait_timeout: 60
-    wait_sleep: 5
-- name: Clean up operand APICast - Production
-  kubernetes.core.k8s:
-    state: absent
-    api_version: apps.3scale.net/v1alpha1
-    kind: APIcast
-    name: example-apicast-production
-    namespace: "{{ target_namespace }}"
-    wait: true
-    wait_timeout: 60
-    wait_sleep: 5
 - name: Clean up secret
   kubernetes.core.k8s:
     state: absent
@@ -146,3 +123,27 @@
     wait: true
     wait_timeout: 60
     wait_sleep: 5
+- name: Clean up APICast
+  kubernetes.core.k8s:
+    state: absent
+    api_version: apps.3scale.net/v1alpha1
+    kind: APIcast
+    name: apicast-staging
+    namespace: "{{ target_namespace }}"
+    wait: true
+    wait_timeout: 60
+    wait_sleep: 5
+- name: Clean up secret
+  kubernetes.core.k8s:
+    state: absent
+    api_version: v1
+    kind: Secret
+    name: 3scaleportal
+    namespace: "{{ target_namespace }}"
+    wait: true
+    wait_timeout: 60
+    wait_sleep: 5
+- name: Create s3 bucket for 3Scale API Management
+  amazon.aws.s3_bucket:
+    name: 3scalebucket
+    state: absent
