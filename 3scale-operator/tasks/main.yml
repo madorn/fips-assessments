@@ -9,7 +9,6 @@
         name: 3scale-bucket
         access_key: "{{ aws_access_key_id }}"
         secret_key: "{{ aws_secret_access_key }}"
-        region: "{{ aws_region }}"
         state: present
     - name: Create Secret in target_namespace
       kubernetes.core.k8s:
