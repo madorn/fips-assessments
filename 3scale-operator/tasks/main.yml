@@ -7,9 +7,9 @@
     - name: Create s3 bucket for 3Scale API Management
       amazon.aws.s3_bucket:
         name: 3scale-bucket
-        access_key: ${AWS_ACCESS_KEY_ID}
-        secret_key: ${AWS_SECRET_ACCESS_KEY}
-        region: ${AWS_REGION}
+        access_key: "{{ aws_access_key_id }}"
+        secret_key: "{{ aws_secret_access_key }}"
+        region: "{{ aws_region }}"
         state: present
     - name: Create Secret in target_namespace
       kubernetes.core.k8s:
@@ -21,10 +21,10 @@
           metadata:
             name: aws-auth
           stringData:
-            AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-            AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+            AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+            AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
             AWS_BUCKET: 3scale-bucket
-            AWS_REGION: ${AWS_REGION}
+            AWS_REGION: "{{ aws_region }}"
           type: Opaque
     - name: Create APIManager in target_namespace
       kubernetes.core.k8s:
@@ -36,7 +36,7 @@
           metadata:
             name: apimanager-sample
           spec:
-            wildcardDomain: 3scale.${CLUSTER_BASE_URL}
+            wildcardDomain: "3scale.{{ cluster_base_url }}"
             system:
               fileStorage:
                 simpleStorageService:
@@ -60,7 +60,7 @@
           metadata:
             name: 3scaleportal
           stringData:
-            AdminPortalURL: https://access-token@3scale-admin.3scale.${CLUSTER_BASE_URL}
+            AdminPortalURL: "https://access-token@3scale-admin.3scale.{{ cluster_base_url }}
           type: Opaque
   rescue:
     - name: Print when failed
