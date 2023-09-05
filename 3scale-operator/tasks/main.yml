@@ -47,7 +47,8 @@
           status: "True"
           type: "Available"
         # Usually the APIManager takes 2-3min to get the True status.
-        wait_timeout: 240
+        wait_sleep: 10
+        wait_timeout: 300
       register: result
       failed_when: result.resources[0] is not defined
     - name: Create Secret in target_namespace for APICast
