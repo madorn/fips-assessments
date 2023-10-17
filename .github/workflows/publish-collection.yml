@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: echo path
-        run: echo $PATH
+        run: ansible-lint --version
 
       - name: Fetch latest release version
         uses: reloc8/action-latest-release-version@1.0.0
