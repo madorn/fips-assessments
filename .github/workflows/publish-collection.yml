@@ -28,3 +28,4 @@ jobs:
 
       - name: Upload collection
         run: ansible-galaxy collection publish -vvv --server "https://${{ secrets.HUB_HOST }}/api/galaxy/" --api-key "${{ secrets.HUB_TOKEN }}" "opdev-fips_assessments-${{ env.RELEASE_TAG }}+${{ env.SHA_SHORT }}.tar.gz"
+
