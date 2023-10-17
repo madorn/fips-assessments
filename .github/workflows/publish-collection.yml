@@ -15,7 +15,7 @@ jobs:
         run: pip install -r requirements.txt
         
       - name: echo path
-        run: ansible-galaxy --version && ansible-lint --version
+        run: ansible-galaxy --version && ansible-lint --version && which ansible-galaxy && which ansible-lint
 
       - name: Fetch latest release version
         uses: reloc8/action-latest-release-version@1.0.0
