@@ -11,8 +11,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Make cache dir
-        run: mkdir ./.cache
+      - name: echo path
+        run: echo $PATH
 
       - name: Fetch latest release version
         uses: reloc8/action-latest-release-version@1.0.0
