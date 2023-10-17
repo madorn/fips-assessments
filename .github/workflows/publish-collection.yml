@@ -10,12 +10,9 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Install python requirements (ansible-builder)
-        run: pip install -r requirements.txt
         
       - name: echo path
-        run: PATH=$PATH:/home/runner/.local/bin
+        run: ansible-galaxy --version
 
       - name: Fetch latest release version
         uses: reloc8/action-latest-release-version@1.0.0
